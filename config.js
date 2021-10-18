@@ -10,7 +10,7 @@ const data = {
             enableSpawning: true,
             count: 10,
             reusePath: 10,
-            parts: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE],
+            parts: [WORK, CARRY, CARRY, MOVE],
             forceRebalance: true,
             setAdditionalMemory: function(creep) {
                 creep.memory.unloading = false;
