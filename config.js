@@ -9,19 +9,32 @@ const data = {
             enableWorking: true,
             enableSpawning: true,
             count: 10,
+            reusePath: 10,
+            parts: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE],
+            forceRebalance: true,
+            setAdditionalMemory: function(creep) {
+                creep.memory.unloading = false;
+            }
+        },
+        fixer: {
+            enableWorking: true,
+            enableSpawning: true,
+            count: 1,
+            reusePath: 10,
             parts: [WORK, CARRY, CARRY, MOVE],
-            forceRebalance: true
         },
         builder: {
             enableWorking: true,
             enableSpawning: true,
-            count: 5,
+            count: 4,
+            reusePath: 10,
             parts: [WORK, WORK, CARRY, MOVE],
         },
         upgrader: {
             enableWorking: true,
             enableSpawning: true,
-            count: 6,
+            count: 3,
+            reusePath: 10,
             parts: [WORK, CARRY, CARRY, MOVE],
             setAdditionalMemory: function(creep) {
                 creep.memory.upgrading = false;

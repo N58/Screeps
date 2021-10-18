@@ -11,19 +11,26 @@ const builder = {
 
             if(target) {
                 if(creep.store[RESOURCE_ENERGY] <= 0) {
-                    if(Game.spawns['s-1'].store[RESOURCE_ENERGY] < creepCapacity) {
-                        utility.moveOut(creep);
+                    const energyStorage = utility.getClosestEnergyStorage(creep, 'half-full');
+
+                    if(creep.withdraw(energyStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(energyStorage, { reusePath: data.roles.builder.reusePath });
                     }
-                    else if(creep.withdraw(Game.spawns['s-1'], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(Game.spawns['s-1']);
-                    }
+                    
                 }
                 else {
                     const building = creep.build(target)
                     if(building == OK)
                         creep.say('🏗️');
                     else if(building == ERR_NOT_IN_RANGE)
-                        creep.moveTo(target);
+                        creep.moveTo(target, { reusePath: data.roles.builder.reusePath });
+
+
+                    /*
+                    else if(Game.spawns['s-1'].store[RESOURCE_ENERGY] < creepCapacity) {
+                        utility.moveOut(creep);
+                    }
+                    */
                 }
             }
             else {

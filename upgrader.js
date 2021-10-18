@@ -14,7 +14,7 @@ const upgrader = {
 
             if(!creep.memory.upgrading && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                 if(creep.withdraw(Game.spawns['s-1'], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(Game.spawns['s-1']);
+                    creep.moveTo(Game.spawns['s-1'], { reusePath: data.roles.upgrader.reusePath });
                 }
             }
             else if(creep.memory.upgrading) {
@@ -24,7 +24,7 @@ const upgrader = {
                     creep.say('🆙');
                 }
                 else if(upgrading == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(creep.room.controller);
+                    creep.moveTo(creep.room.controller, { reusePath: data.roles.upgrader.reusePath });
                 }
             }
         }

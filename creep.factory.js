@@ -55,11 +55,13 @@ const creepFactory = {
                 for (const name in Game.creeps) { 
                     const creep = Game.creeps[name];
 
-                    if(minimum == null)
-                        minimum = creep;
+                    if(creep.memory.role == roleName) {
+                        if(minimum == null)
+                            minimum = creep;
 
-                    if(creep.store[RESOURCE_ENERGY] < minimum.store[RESOURCE_ENERGY])
-                        minimum = creep;
+                        if(creep.store[RESOURCE_ENERGY] < minimum.store[RESOURCE_ENERGY])
+                            minimum = creep;
+                    }
                 }
 
                 console.log(`Deleting ${minimum.name}!`);

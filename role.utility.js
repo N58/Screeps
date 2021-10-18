@@ -90,6 +90,37 @@ let all = {
             if(success != 0)
                 success = creep.move(LEFT);
         }
+    },
+
+    getClosestEnergyStorage: function(creep, capacity) {
+        if(capacity == null)
+            capacity = 'full';
+
+        return creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+            filter: (structure) => {
+                let capacityCondition = false;
+
+                if((structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN))
+                {
+                    switch (capacity) {
+                        case 'full':
+                            capacityCondition = structure.store.getFreeCapacity(RESOURCE_ENERGY) <= 0
+                            break;
+                        case 'half-full':
+                            capacityCondition = structure.store.getUsedCapacity(RESOURCE_ENERGY) >= (structure.store.getCapacity(RESOURCE_ENERGY) / 2);
+                            break;
+                        case 'half-empty':
+                            capacityCondition = structure.store.getUsedCapacity(RESOURCE_ENERGY) <= (structure.store.getCapacity(RESOURCE_ENERGY) / 2);
+                            break;
+                        case 'empty':
+                            capacityCondition = structure.store.getUsedCapacity(RESOURCE_ENERGY) <= 0
+                            break;
+                    }
+                }
+
+                return capacityCondition;
+            }
+        });
     }
 };
 

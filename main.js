@@ -1,26 +1,31 @@
-let creepFactory = require('creep.factory');
+const creepFactory = require('creep.factory');
 const utility = require('role.utility');
 const rebalanceSystem = require('./rebalanceSystem');
 
 const harvester = require('harvester');
 const upgrader = require('upgrader');
 const builder = require('builder');
+const fixer = require('./fixer');
+const buildingsFactory = require('buildings.factory');
 
 module.exports.loop = function () {
     creepFactory.run('s-1');
     rebalanceSystem.run();
+    
 
     for (const name in Game.creeps) {
         const creep = Game.creeps[name];
 
         randomMessage(creep)
 
+        buildingsFactory.roadCheck(creep);
         utility.renewCreep(creep);
 
         if(!creep.memory.needsRenewing) {
             harvester.run(creep);
             upgrader.run(creep);
             builder.run(creep);
+            fixer.run(creep);
         }
     }
 }
