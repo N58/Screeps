@@ -121,7 +121,27 @@ let all = {
                 return capacityCondition;
             }
         });
-    }
+    },
+
+    getConfig: function(creep) {
+        return data.roles[creep.memory.role]
+    },
+
+    getPriorityJob: function(creep) {
+        const roleConfig = this.getConfig(creep)
+        const jobsPriority = roleConfig.jobPriority
+
+        for (const job of jobsPriority) {
+            const target = data.jobs[job].isAvailable(creep)
+            if(target) {
+                creep.memory.work = job
+                return target
+            }
+        }
+
+        creep.memory.work = ''
+        return target
+    },
 };
 
 function renew(spawn, creep) {

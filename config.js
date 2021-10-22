@@ -22,6 +22,7 @@ const data = {
             count: 1,
             reusePath: 10,
             parts: [WORK, CARRY, CARRY, MOVE],
+            jobPriority: [ 'towerReload', 'dropPick', 'structureFix' ],
         },
         builder: {
             enableWorking: true,
@@ -41,12 +42,35 @@ const data = {
             }
         },
     },
+    jobs: {
+        towerReload: {
+            isAvailable: function(creep) {
+                return creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                    }
+                });
+            }
+        },
+        dropPick: {
+            isAvailable: function(creep) {
+                return creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
+            }
+        },
+        fixStruct: {
+            isAvailable: function(creep) {
+                return creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: object => object.hits < object.hitsMax
+                });
+            }
+        },
+    },
     resources: {
         energy: {
             rooms: ['default'],
             harvestersCount: 10
         }
-    }
+    },
 }
 
 module.exports = data;

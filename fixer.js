@@ -6,27 +6,47 @@ const fixer = {
     /** @param {Creep} creep **/
     run: function(creep) {
         if(creep.memory.role == 'fixer' && data.roles.fixer.enableWorking) {
-            const droppedTarget = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
-            const brokenTarget = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: object => object.hits < object.hitsMax
-            });
+            const target = utility.getPriorityJob(creep);
+            const workName = creep.memory.work;
 
-            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) <= 0) {
-                const energyStorage = utility.getClosestEnergyStorage(creep, 'half-empty');
+            if(workName)
+                this[workName](creep, target);
+        }
+    },
 
-                if(creep.transfer(energyStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(energyStorage, { reusePath: data.roles.fixer.reusePath });
-                }
-            }
-            else {
-                
-                if(droppedTarget) {
-                    if(creep.pickup(droppedTarget) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(droppedTarget, { reusePath: data.roles.fixer.reusePath });
-                    }
-                }
+    // JOBS
+    dropPick: function(creep, target) {
+        if(creep.store.getFreeCapacity(RESOURCE_ENERGY) <= 0) {
+            const energyStorage = utility.getClosestEnergyStorage(creep, 'half-empty');
+
+            if(creep.transfer(energyStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(energyStorage, { reusePath: data.roles.fixer.reusePath });
             }
         }
+        else if(target)  {
+            if(creep.pickup(target) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(target, { reusePath: data.roles.fixer.reusePath });
+            }
+        }
+    },
+
+    towerReload: function(creep, target) {
+        if(creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+            const energyStorage = utility.getClosestEnergyStorage(creep, 'half-full');
+
+            if(creep.withdraw(energyStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(energyStorage, { reusePath: data.roles.fixer.reusePath });
+            }
+        }
+        else if(target) {
+            if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(target, { reusePath: data.roles.fixer.reusePath });
+            }
+        }
+    },
+
+    structureFix: function(creep, target) {
+        
     }
 };
 

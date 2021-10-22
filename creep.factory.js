@@ -29,7 +29,8 @@ const creepFactory = {
                     memory: {
                         role: roleName,
                         needsRenewing: false,
-                        renewing: false
+                        renewing: false,
+                        work: ''
                     }
                 });
 

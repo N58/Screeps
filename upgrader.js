@@ -1,4 +1,5 @@
 const data = require("./config");
+const utility = require('role.utility');
 
 const upgrader = {
 
@@ -13,8 +14,10 @@ const upgrader = {
             }
 
             if(!creep.memory.upgrading && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                if(creep.withdraw(Game.spawns['s-1'], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(Game.spawns['s-1'], { reusePath: data.roles.upgrader.reusePath });
+                const energyStorage = utility.getClosestEnergyStorage(creep, 'half-full');
+
+                if(creep.withdraw(energyStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(energyStorage, { reusePath: data.roles.upgrader.reusePath });
                 }
             }
             else if(creep.memory.upgrading) {
