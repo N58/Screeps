@@ -129,19 +129,35 @@ let all = {
 
     getPriorityJob: function(creep) {
         const roleConfig = this.getConfig(creep)
-        const jobsPriority = roleConfig.jobPriority
+        const jobsPriority = roleConfig.jobs
 
         for (const job of jobsPriority) {
-            const target = data.jobs[job].isAvailable(creep)
-            if(target) {
-                creep.memory.work = job
-                return target
+            if (data.jobs[job]) {
+                const target = data.jobs[job].isAvailable(creep)
+                if(target) {
+                    console.log(`${creep.name} gets job: ${job}`)
+                    creep.memory.work = { name: job, id: target.id }
+                    return;
+                }
             }
         }
 
-        creep.memory.work = ''
-        return target
+        this.clearWork(creep)
     },
+
+    clearWork: function(creep) {
+        creep.memory.work = { name: '', target: undefined }
+    },
+
+    isStoreFull(object) {
+        if(object.store.getFreeCapacity() <= 0) return true
+        else return false
+    },
+
+    isStoreEmpty(object) {
+        if(object.store.getUsedCapacity() <= 0) return true
+        else return false
+    }
 };
 
 function renew(spawn, creep) {

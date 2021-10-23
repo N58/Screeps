@@ -43,8 +43,8 @@ const creepFactory = {
 
                     console.log(`Spawning new ${roleName}! Count: ${count} + 1.`)
                     
-                    if(role.forceRebalance)
-                        rebalanceSystem.run(true);
+                    //if(role.forceRebalance)
+                        //rebalanceSystem.run(true);
 
                     break;
                 }

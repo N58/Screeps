@@ -23,7 +23,7 @@ const rebalanceSystem = {
                 if(creep.memory.role == 'harvester') {
                     const sourceId = counter%sourceAmount;
                     const source = sources[sourceId];
-                    creep.memory.sourceId = source.id;
+                    creep.memory.work.id = source.id;
 
                     counter++;
                 }
