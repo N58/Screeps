@@ -1,5 +1,4 @@
 const data = require("config");
-const rebalanceSystem = require("./rebalanceSystem");
 
 const creepFactory = {
 
@@ -42,9 +41,6 @@ const creepFactory = {
                         role.setAdditionalMemory(creep);
 
                     console.log(`Spawning new ${roleName}! Count: ${count} + 1.`)
-                    
-                    //if(role.forceRebalance)
-                        //rebalanceSystem.run(true);
 
                     break;
                 }

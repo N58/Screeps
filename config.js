@@ -3,27 +3,29 @@ const data = {
         enableRenewing: true,
         rebalanceRate: 10000, // every X tick do rebalance
         defaultHarvestingRooms: ['W5N8'], // 'W6N8'
+        pathFindingOpts: function(creep) {
+            return {
+                reusePath: 10,
+                plainCost: 2,
+                swampCost: 10
+            }
+        },
     },
     roles: {
         harvester: {
-            file: () => { return require('harvester') },
             enableWorking: true,
             enableSpawning: true,
-            count: 10,
-            reusePath: 10,
+            count: 8,
             parts: [WORK, CARRY, CARRY, MOVE],
             jobs: [ 'energyHarvest' ],
-            forceRebalance: true,
             setAdditionalMemory: function(creep) {
                 creep.memory.status = 'harvesting';
             }
         },
         fixer: {
-            file: () => { return require('fixer') },
             enableWorking: true,
             enableSpawning: true,
-            count: 1,
-            reusePath: 10,
+            count: 2,
             parts: [WORK, CARRY, CARRY, MOVE],
             jobs: [ 'towerReload', 'dropPick' ],
             setAdditionalMemory: function(creep) {
@@ -31,22 +33,20 @@ const data = {
             }
         },
         builder: {
-            file: () => { return require('builder') },
             enableWorking: true,
             enableSpawning: true,
-            count: 4,
-            reusePath: 10,
+            count: 2,
             parts: [WORK, WORK, CARRY, MOVE],
+            jobs: [ 'structureBuild' ],
         },
         upgrader: {
-            file: () => { return require('upgrader') },
             enableWorking: true,
             enableSpawning: true,
-            count: 3,
-            reusePath: 10,
+            count: 10,
             parts: [WORK, CARRY, CARRY, MOVE],
+            jobs: [ 'controllerUpgrade' ],
             setAdditionalMemory: function(creep) {
-                creep.memory.upgrading = false;
+                creep.memory.status = 'picking';
             }
         },
     },
@@ -73,7 +73,7 @@ const data = {
             }
         },
         energyHarvest: {
-            isAvailable: function(creep) {
+            isAvailable: function() {
                 let sources = []
 
                 for (const name in Game.rooms) {
@@ -84,28 +84,35 @@ const data = {
 
                 let sums = {}
 
+                for (const source of sources) {
+                    sums[source.id] = 0;
+                }
+
                 for (const name in Game.creeps) {
                     const tempCreep = Game.creeps[name]
                     const obj = Game.getObjectById(tempCreep.memory.work.id)
 
-                    if(obj.ticksToRegeneration != undefined && obj.energy != undefined) {
-                        
-                        sums[obj.id] = (sums[obj.id] ?? 0) + 1
+                    if(obj && obj.ticksToRegeneration != undefined && obj.energy != undefined) {
+                        sums[obj.id]++;
                     }
                 }
 
-                const minKey = Object.keys(sums).reduce((key, v) => obj[v] < obj[key] ? v : key);
+                const minKey = Object.keys(sums).reduce((key, v) => sums[v] < sums[key] ? v : key);
                 const minSource = Game.getObjectById(minKey);
                 return minSource;
             }
+        },
+        structureBuild: {
+            isAvailable: function(creep) {
+                return creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+            }
+        },
+        controllerUpgrade: {
+            isAvailable: function(creep) {
+                return {id: true}
+            }
         }
-    },
-    resources: {
-        energy: {
-            rooms: ['default'],
-            harvestersCount: 10
-        }
-    },
+    }
 }
 
 module.exports = data;

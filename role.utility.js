@@ -41,55 +41,60 @@ let all = {
     },
 
     calcTickCost: function(creep, origin, goal) {
-        const additionalPercentage = 0.1; // 0.1 = 10%
-
-        let fatigueDecreaserCount = 0;
-        let fatigueIncreaserCount = 0;
-        let carryLoad = 0;
-        let carryCount = 0;
-
-        for (const part of creep.body) {
-            const type = part.type
-            
-            if(type == 'move')
-                fatigueDecreaserCount++;
-            else if(type == 'carry')
-            {
-                for (const resource in creep.carry) {
-                    const amount = creep.carry[resource];
-                    carryLoad += amount;
-                }
-
-                carryCount++;
-            }
-            else
-                fatigueIncreaserCount++;
-        }
-
-        if(carryLoad > 0)
-            fatigueIncreaserCount += carryCount;
+        const additionalPercentage = 0; // 0.1 = 10%
         
         const foundPath = PathFinder.search(origin, goal, {
-            plainCost: 2 * fatigueIncreaserCount,
-            swampCost: 10 * fatigueIncreaserCount
+            plainCost: 2,
+            swampCost: 10
         });
 
-        let ticks = foundPath.cost - (foundPath.path.length * fatigueDecreaserCount * 2)
+        let ticks = (foundPath.cost * this.getOtherPartsCount(creep) ) / this.getMovePartsCount(creep)
         ticks = ticks + Math.ceil(ticks * additionalPercentage);
 
         return ticks;
     },
 
-    moveOut: function(creep) {
-        if(creep.pos.isNearTo(Game.spawns['s-1'])) {
-            let success = creep.move(TOP);
-            if(success != 0)
-                success = creep.move(RIGHT);
-            if(success != 0)
-                success = creep.move(BOTTOM);
-            if(success != 0)
-                success = creep.move(LEFT);
-        }
+    // NOT USED YET
+    calculateCostMatrix: function(room) {
+        let costMatrix = new PathFinder.CostMatrix;
+
+        room.find(FIND_STRUCTURES).forEach(struct => {
+            if(struct.structureType == STRUCTURE_ROAD)
+                costMatrix.set(struct.pos.x, struct.pos.y, 1);
+            else if (struct.structureType !== STRUCTURE_CONTAINER &&
+                    (struct.structureType !== STRUCTURE_RAMPART ||
+                    !struct.my))
+                costMatrix.set(struct.pos.x, struct.pos.y, 255);
+        });
+
+        room.find(FIND_CREEPS).forEach(creep => {
+            costMatrix.set(creep.pos.x, creep.pos.y, 255);
+        });
+
+        return costMatrix
+    },
+
+    getMovePartsCount: function(creep) {
+        return creep.getActiveBodyparts(MOVE);
+    },
+
+    getOtherPartsCount: function(creep) {
+        const work = creep.getActiveBodyparts(WORK);
+        const carry = creep.getActiveBodyparts(CARRY);
+        const attack = creep.getActiveBodyparts(ATTACK);
+        const ranged = creep.getActiveBodyparts(RANGED_ATTACK);
+        const heal = creep.getActiveBodyparts(HEAL);
+        const tough = creep.getActiveBodyparts(TOUGH);
+
+        return work + carry + attack + ranged + heal + tough;
+    },
+
+    getPlainCost: function(creep) {
+        return 2 * this.getOtherPartsCount(creep)
+    },
+
+    getSwampCost: function(creep) {
+        return 10 * this.getOtherPartsCount(creep)
     },
 
     getClosestEnergyStorage: function(creep, capacity) {
@@ -135,7 +140,7 @@ let all = {
             if (data.jobs[job]) {
                 const target = data.jobs[job].isAvailable(creep)
                 if(target) {
-                    console.log(`${creep.name} gets job: ${job}`)
+                    //console.log(`${creep.name} gets job: ${job}`)
                     creep.memory.work = { name: job, id: target.id }
                     return;
                 }

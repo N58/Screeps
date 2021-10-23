@@ -1,6 +1,3 @@
-const data = require("./config");
-const utility = require('role.utility');
-
 const tower = {
 
     run: function() {
