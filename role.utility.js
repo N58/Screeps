@@ -58,7 +58,7 @@ let all = {
     calculateCostMatrix: function(room) {
         let costMatrix = new PathFinder.CostMatrix;
 
-        room.find(FIND_STRUCTURES).forEach(struct => {
+        roomData[room.name].FIND_STRUCTURES.forEach(struct => {
             if(struct.structureType == STRUCTURE_ROAD)
                 costMatrix.set(struct.pos.x, struct.pos.y, 1);
             else if (struct.structureType !== STRUCTURE_CONTAINER &&
@@ -67,7 +67,7 @@ let all = {
                 costMatrix.set(struct.pos.x, struct.pos.y, 255);
         });
 
-        room.find(FIND_CREEPS).forEach(creep => {
+        roomData[room.name].FIND_CREEPS.forEach(creep => {
             costMatrix.set(creep.pos.x, creep.pos.y, 255);
         });
 
@@ -154,13 +154,13 @@ let all = {
         creep.memory.work = { name: '', target: undefined }
     },
 
-    isStoreFull(object) {
-        if(object.store.getFreeCapacity() <= 0) return true
+    isStoreFull(object, resource = null) {
+        if(object.store.getFreeCapacity(resource) <= 0) return true
         else return false
     },
 
-    isStoreEmpty(object) {
-        if(object.store.getUsedCapacity() <= 0) return true
+    isStoreEmpty(object, resource = null) {
+        if(object.store.getUsedCapacity(resource) <= 0) return true
         else return false
     }
 };

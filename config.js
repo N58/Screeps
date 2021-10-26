@@ -53,23 +53,27 @@ const data = {
     jobs: {
         towerReload: {
             isAvailable: function(creep) {
-                return creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                const structures = roomData[creep.room.name].TOWERS
+
+                return creep.pos.findClosestByPath(structures, {
                     filter: (structure) => {
-                        return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                        return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                     }
                 });
             }
         },
         dropPick: {
             isAvailable: function(creep) {
-                return creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
+                const structures = roomData[creep.room.name].FIND_DROPPED_RESOURCES.filter(rs => rs.resourceType == RESOURCE_ENERGY)
+
+                return creep.pos.findClosestByPath(structures);
             }
         },
         structureFix: {
             isAvailable: function(creep) {
-                return creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                    filter: object => object.hits < object.hitsMax
-                });
+                const structures = roomData[creep.room.name].STRUCTURES_TO_REPAIR
+
+                return creep.pos.findClosestByPath(structures);
             }
         },
         energyHarvest: {
@@ -77,9 +81,7 @@ const data = {
                 let sources = []
 
                 for (const name in Game.rooms) {
-                    const room = Game.rooms[name]
-
-                    sources.push(...room.find(FIND_SOURCES))
+                    sources.push(...roomData[name].FIND_SOURCES)
                 }
 
                 let sums = {}
@@ -104,7 +106,9 @@ const data = {
         },
         structureBuild: {
             isAvailable: function(creep) {
-                return creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+                const structures = roomData[creep.room.name].FIND_CONSTRUCTION_SITES
+
+                return creep.pos.findClosestByPath(structures);
             }
         },
         controllerUpgrade: {

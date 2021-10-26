@@ -8,38 +8,62 @@ const jobs = require('jobs');
 
 const recordsNumber = 100
 
+const profiler = require('screeps-profiler');
+
+profiler.enable();
+
 module.exports.loop = function () {
     // Record CPU
     const startCpu = Game.cpu.getUsed()
+    
+    profiler.wrap(function() {
+        // Work
+        roomData = {}
+        for (const name in Game.rooms) {
+            const room = Game.rooms[name];
+            const structures = room.find(FIND_STRUCTURES);
 
-    // Work
-    creepFactory.run('s-1');
-    tower.run();
-
-    for (const name in Game.creeps) {
-        const creep = Game.creeps[name];
-
-        buildingsFactory.roadCheck(creep);
-
-        utility.renewCreep(creep);
-
-        const dataRoles = data.roles;
-        const creepMemory = creep.memory;
-        if(!creepMemory.needsRenewing) { 
-            const roleConfig = dataRoles[creepMemory.role];
-
-            if(roleConfig.enableWorking) {
-                if (!creep.memory.work.id)
-                    utility.getPriorityJob(creep)
-
-                const workName = creep.memory.work.name
-                const target = Game.getObjectById(creep.memory.work.id)
-                
-                if(workName)
-                    jobs[workName](creep, target)
+            roomData[name] = {
+                STRUCTURES: structures,
+                EXTENSIONS: structures.filter(s => s.structureType == STRUCTURE_EXTENSION),
+                TOWERS: structures.filter(s => s.structureType == STRUCTURE_TOWER),
+                DEFENSIVE_STRUCTURES: structures.filter(s => s.structureType == STRUCTURE_WALL || s.structureType == STRUCTURE_RAMPART),
+                STRUCTURES_TO_REPAIR: structures.filter(s => (s.hits != s.hitsMax)),
+                FIND_SOURCES: room.find(FIND_SOURCES),
+                FIND_DROPPED_RESOURCES: room.find(FIND_DROPPED_RESOURCES),
+                FIND_CONSTRUCTION_SITES: room.find(FIND_CONSTRUCTION_SITES),
+                FIND_CREEPS: room.find(FIND_CREEPS),
             }
         }
-    }
+
+        creepFactory.run('s-1');
+        tower.run();
+
+        for (const name in Game.creeps) {
+            const creep = Game.creeps[name];
+
+            buildingsFactory.roadCheck(creep);
+
+            utility.renewCreep(creep);
+
+            const dataRoles = data.roles;
+            const creepMemory = creep.memory;
+            if(!creepMemory.needsRenewing) { 
+                const roleConfig = dataRoles[creepMemory.role];
+
+                if(roleConfig.enableWorking) {
+                    if (!creep.memory.work.id)
+                        utility.getPriorityJob(creep)
+
+                    const workName = creep.memory.work.name
+                    const target = Game.getObjectById(creep.memory.work.id)
+                    
+                    if(workName)
+                        jobs[workName](creep, target)
+                }
+            }
+        }
+    });
     
     // Finish recording CPU
     const differenceCpu = Math.round((Game.cpu.getUsed() - startCpu) * 10) / 10;
