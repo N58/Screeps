@@ -15,8 +15,8 @@ const data = {
         harvester: {
             enableWorking: true,
             enableSpawning: true,
-            count: 8,
-            parts: [WORK, CARRY, CARRY, MOVE],
+            count: 7,
+            parts: [WORK, CARRY, CARRY, MOVE, MOVE ],
             jobs: [ 'energyHarvest' ],
             setAdditionalMemory: function(creep) {
                 creep.memory.status = 'harvesting';
@@ -42,7 +42,7 @@ const data = {
         upgrader: {
             enableWorking: true,
             enableSpawning: true,
-            count: 10,
+            count: 4,
             parts: [WORK, CARRY, CARRY, MOVE],
             jobs: [ 'controllerUpgrade' ],
             setAdditionalMemory: function(creep) {
@@ -92,7 +92,8 @@ const data = {
 
                 for (const name in Game.creeps) {
                     const tempCreep = Game.creeps[name]
-                    const obj = Game.getObjectById(tempCreep.memory.work.id)
+                    const work = tempCreep.getWork()
+                    const obj = Game.getObjectById(work.id)
 
                     if(obj && obj.ticksToRegeneration != undefined && obj.energy != undefined) {
                         sums[obj.id]++;

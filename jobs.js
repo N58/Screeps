@@ -14,21 +14,21 @@ const jobs = {
                 creep.moveTo(target, data.config.pathFindingOpts(creep));
             }
             else if(harvestResult == ERR_INVALID_TARGET || !target) {
-                utility.clearWork(creep);
+                creep.clearWork()
             }
 
-            if(utility.isStoreFull(creep)) {
+            if(creep.isStoreFull()) {
                 creep.memory.status = 'unloading';
             }
         }
         else if (creep.memory.status == 'unloading') {
-            const energyStorage = utility.getClosestEnergyStorage(creep, 'half-empty');
+            const energyStorage = utility.getClosestEnergyStorage(creep, 'not-full');
 
             if(creep.transfer(energyStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(energyStorage, data.config.pathFindingOpts(creep));
             }
 
-            if(utility.isStoreEmpty(creep)) {
+            if(creep.isStoreEmpty()) {
                 creep.memory.status = 'harvesting';
             }
         }
@@ -40,14 +40,14 @@ const jobs = {
     dropPick: function(creep, target) {
         
         if (creep.memory.status == 'unloading') {
-            const energyStorage = utility.getClosestEnergyStorage(creep, 'half-empty');
+            const energyStorage = utility.getClosestEnergyStorage(creep, 'not-full');
             const transferResult = creep.transfer(energyStorage, RESOURCE_ENERGY);
 
             if(transferResult == ERR_NOT_IN_RANGE) {
                 creep.moveTo(energyStorage, data.config.pathFindingOpts(creep));
             }
             
-            if(utility.isStoreEmpty(creep)) {
+            if(creep.isStoreEmpty()) {
                 creep.memory.status = 'picking'
             }
         }
@@ -58,10 +58,10 @@ const jobs = {
                 creep.moveTo(target, data.config.pathFindingOpts(creep));
             }
             else if (pickupResult == ERR_INVALID_TARGET) {
-                utility.clearWork(creep)
+                creep.clearWork()
             }
             
-            if(utility.isStoreFull(creep)) {
+            if(creep.isStoreFull()) {
                 creep.memory.status = 'unloading'
             }
         }
@@ -78,7 +78,7 @@ const jobs = {
                 creep.moveTo(energyStorage, data.config.pathFindingOpts(creep));
             }
 
-            if(utility.isStoreFull(creep)) {
+            if(creep.isStoreFull()) {
                 creep.memory.status = 'unloading'
             }
         }
@@ -92,7 +92,7 @@ const jobs = {
                 creep.memory.status = 'picking'
             }
             else if (transferResult == ERR_INVALID_TARGET || transferResult == ERR_FULL) {
-                utility.clearWork(creep)
+                creep.clearWork()
             }
         }
         else {
@@ -101,9 +101,9 @@ const jobs = {
     },
 
     structureBuild: function(creep, target) {
-        if(utility.isStoreEmpty(creep)) {
+        if(creep.isStoreEmpty()) {
             if(!target) {
-                utility.clearWork(creep)
+                creep.clearWork()
                 return
             }
 
@@ -119,7 +119,7 @@ const jobs = {
             else if (building == ERR_NOT_IN_RANGE)
                 creep.moveTo(target, data.config.pathFindingOpts(creep));
             else if (building == ERR_INVALID_TARGET)
-                utility.clearWork(creep)
+                creep.clearWork()
         }
     },
 
@@ -131,7 +131,7 @@ const jobs = {
                 creep.moveTo(energyStorage, data.config.pathFindingOpts(creep));
             }
 
-            if(utility.isStoreFull(creep)) {
+            if(creep.isStoreFull()) {
                 creep.memory.status = 'upgrading';
             }
         }
@@ -145,7 +145,7 @@ const jobs = {
                 creep.moveTo(creep.room.controller, data.config.pathFindingOpts(creep));
             }
 
-            if(utility.isStoreEmpty(creep))
+            if(creep.isStoreEmpty())
                 creep.memory.status = 'picking';
         }
         else {

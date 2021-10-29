@@ -29,7 +29,7 @@ const creepFactory = {
                         role: roleName,
                         needsRenewing: false,
                         renewing: false,
-                        work: ''
+                        work: {}
                     }
                 });
 

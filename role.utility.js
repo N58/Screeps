@@ -2,7 +2,7 @@ const data = require("./config");
 
 let all = {
     renewCreep: function(creep) {
-        const goal = { pos: Game.spawns['s-1'].pos, range: 1 }
+        const goal = { pos: Game.spawns['s-1'].pos }
         
         if(data.config.enableRenewing) {
             if(!creep.memory.needsRenewing) {
@@ -41,7 +41,7 @@ let all = {
     },
 
     calcTickCost: function(creep, origin, goal) {
-        const additionalPercentage = 0; // 0.1 = 10%
+        const additionalPercentage = 0.1; // 0.1 = 10%
         
         const foundPath = PathFinder.search(origin, goal, {
             plainCost: 2,
@@ -120,6 +120,12 @@ let all = {
                         case 'empty':
                             capacityCondition = structure.store.getUsedCapacity(RESOURCE_ENERGY) <= 0
                             break;
+                        case 'not-full':
+                            capacityCondition = structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                            break;
+                        case 'not-empty':
+                            capacityCondition = structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0
+                            break;
                     }
                 }
 
@@ -128,12 +134,8 @@ let all = {
         });
     },
 
-    getConfig: function(creep) {
-        return data.roles[creep.memory.role]
-    },
-
     getPriorityJob: function(creep) {
-        const roleConfig = this.getConfig(creep)
+        const roleConfig = creep.getConfig()
         const jobsPriority = roleConfig.jobs
 
         for (const job of jobsPriority) {
@@ -141,28 +143,14 @@ let all = {
                 const target = data.jobs[job].isAvailable(creep)
                 if(target) {
                     //console.log(`${creep.name} gets job: ${job}`)
-                    creep.memory.work = { name: job, id: target.id }
+                    creep.setWork(job, target.id)
                     return;
                 }
             }
         }
 
-        this.clearWork(creep)
+        creep.clearWork()
     },
-
-    clearWork: function(creep) {
-        creep.memory.work = { name: '', target: undefined }
-    },
-
-    isStoreFull(object, resource = null) {
-        if(object.store.getFreeCapacity(resource) <= 0) return true
-        else return false
-    },
-
-    isStoreEmpty(object, resource = null) {
-        if(object.store.getUsedCapacity(resource) <= 0) return true
-        else return false
-    }
 };
 
 function renew(spawn, creep) {

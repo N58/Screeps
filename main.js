@@ -1,10 +1,10 @@
 const creepFactory = require('creep.factory');
-const utility = require('role.utility');
-const data = require('./config');
-
 const buildingsFactory = require('buildings.factory');
-const tower = require('./tower');
+const data = require('./config');
 const jobs = require('jobs');
+const utility = require('role.utility');
+const tower = require('./tower');
+require('./prototypeExtensions');
 
 const recordsNumber = 100
 
@@ -52,11 +52,12 @@ module.exports.loop = function () {
                 const roleConfig = dataRoles[creepMemory.role];
 
                 if(roleConfig.enableWorking) {
-                    if (!creep.memory.work.id)
+                    const work = creep.getWork()
+                    if (!work.id)
                         utility.getPriorityJob(creep)
 
-                    const workName = creep.memory.work.name
-                    const target = Game.getObjectById(creep.memory.work.id)
+                    const workName = work.name
+                    const target = Game.getObjectById(work.id)
                     
                     if(workName)
                         jobs[workName](creep, target)
