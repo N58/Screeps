@@ -25,7 +25,7 @@ const data = {
         fixer: {
             enableWorking: true,
             enableSpawning: true,
-            count: 2,
+            count: 1,
             parts: [WORK, CARRY, CARRY, MOVE],
             jobs: [ 'towerReload', 'dropPick' ],
             setAdditionalMemory: function(creep) {

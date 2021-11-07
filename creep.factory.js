@@ -32,7 +32,7 @@ const creepFactory = {
                         work: {}
                     }
                 });
-
+                
                 if(spawnCreepResult == OK) {
                     
                     const creep = Game.creeps[creepName];
@@ -41,9 +41,9 @@ const creepFactory = {
                         role.setAdditionalMemory(creep);
 
                     console.log(`Spawning new ${roleName}! Count: ${count} + 1.`)
-
-                    break;
                 }
+
+                return;
             }
             else if(count > maxCount)
             {
@@ -65,7 +65,7 @@ const creepFactory = {
 
                 minimum.suicide();                
             }
-        }        
+        }
     }
 };
 
